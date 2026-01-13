@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -29,6 +30,16 @@ async function bootstrap() {
 
   // 4. Registrar filtro de excepciones global
   app.useGlobalFilters(new AllExceptionsFilter());
+
+  // 5. Configuración de Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Expenses API')
+    .setDescription('The Expenses API description')
+    .setVersion('1.0')
+    .addTag('expenses')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
 
   const port = configService.get<number>('PORT') || 3000;
   await app.listen(port);
