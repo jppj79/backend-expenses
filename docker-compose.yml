@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    image: backend-expenses
+    container_name: backend-expenses
+    env_file:
+      - .env
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    external: true # <--- Clave: se conecta a la red de Postgres
