@@ -15,6 +15,7 @@ const mockExpensesService = {
     findById: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    getStats: jest.fn(),
 };
 
 describe('ExpensesController', () => {
@@ -87,6 +88,18 @@ describe('ExpensesController', () => {
             await controller.search(query);
 
             expect(service.findAll).toHaveBeenCalledWith(expectedFilter);
+        });
+    });
+
+    describe('getStats', () => {
+        it('should return aggregated stats', async () => {
+            const expectedStats = [{ category: 'Food', totalAmount: 100, count: 1 }];
+            mockExpensesService.getStats.mockResolvedValue(expectedStats);
+
+            const result = await controller.getStats();
+
+            expect(service.getStats).toHaveBeenCalled();
+            expect(result).toEqual(expectedStats);
         });
     });
 

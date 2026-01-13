@@ -16,6 +16,7 @@ import { ExpensesService } from '../../application/use-cases/expenses.service';
 import { CreateExpenseDto } from '../../application/dto/create-expense.dto';
 import { UpdateExpenseDto } from '../../application/dto/update-expense.dto';
 import { FilterExpenseDto } from '../../application/dto/filter-expense.dto';
+import { ExpenseStatsDto } from '../../application/dto/expense-stats.dto';
 
 @ApiTags('expenses')
 @Controller('expenses') // Esto generará la ruta /api/expenses (configuraremos 'api' en el paso 8)
@@ -37,6 +38,13 @@ export class ExpensesController {
   search(@Query('query') query: string) {
     // Reutilizamos el filtro del findAll pero forzando el query
     return this.expensesService.findAll({ query } as FilterExpenseDto);
+  }
+
+  @Get('stats/category')
+  @ApiOperation({ summary: 'Get aggregated expenses by category' })
+  @ApiResponse({ status: 200, description: 'Return stats.', type: ExpenseStatsDto, isArray: true })
+  getStats() {
+    return this.expensesService.getStats();
   }
 
   @Get()

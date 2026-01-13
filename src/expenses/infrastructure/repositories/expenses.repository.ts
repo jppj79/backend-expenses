@@ -7,6 +7,7 @@ import { FilterExpenseDto } from '../../application/dto/filter-expense.dto';
 import { PaginatedResult } from '../../domain/interfaces/paginated-result.interface';
 import { ExpenseEntity } from '../persistence/entities/expense.entity';
 import { ExpenseMapper } from '../persistence/mappers/expense.mapper';
+import { ExpenseCategoryStats } from '../../domain/interfaces/expense-stats.interface';
 
 @Injectable()
 export class ExpensesRepository implements IExpensesRepository {
@@ -53,6 +54,22 @@ export class ExpensesRepository implements IExpensesRepository {
         totalPages,
       },
     };
+  }
+
+  async getStatsByCategory(): Promise<ExpenseCategoryStats[]> {
+    const rawData = await this.typeOrmRepo
+      .createQueryBuilder('expense')
+      .select('expense.category', 'category')
+      .addSelect('SUM(expense.amount)', 'totalAmount')
+      .addSelect('COUNT(expense.id)', 'count')
+      .groupBy('expense.category')
+      .getRawMany();
+
+    return rawData.map((item) => ({
+      category: item.category,
+      totalAmount: parseFloat(item.totalAmount),
+      count: parseInt(item.count, 10),
+    }));
   }
 
   async findById(id: number): Promise<Expense | null> {

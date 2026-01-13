@@ -13,7 +13,7 @@ export class ExpensesService {
   constructor(
     @Inject(EXPENSES_REPOSITORY)
     private readonly expensesRepository: IExpensesRepository,
-  ) {}
+  ) { }
 
   async create(createExpenseDto: CreateExpenseDto) {
     // Convertimos el DTO a la entidad
@@ -43,5 +43,9 @@ export class ExpensesService {
   async remove(id: number) {
     await this.findById(id);
     return this.expensesRepository.delete(id);
+  }
+
+  async getStats() {
+    return this.expensesRepository.getStatsByCategory();
   }
 }
