@@ -5,8 +5,8 @@ import { CreateExpenseDto } from '../../application/dto/create-expense.dto';
 import { NotFoundException } from '@nestjs/common';
 import { FilterExpenseDto } from '../../application/dto/filter-expense.dto';
 import { UpdateExpenseDto } from '../../application/dto/update-expense.dto';
-import { Expense } from '../../domain/entity/expense.entity';
-import { PaginatedResult } from '../../domain/interfaces/paginated-result.interface';
+import { Expense } from '../../domain/entities/expense.entity';
+import { PaginatedResult } from '../../domain/types/paginated-result.type';
 
 // Mock del servicio para aislar el controlador
 const mockExpensesService = {

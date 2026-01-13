@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ExpenseCategoryStats } from '../../domain/interfaces/expense-stats.interface';
+import { ExpenseCategoryStats } from '../../domain/types/expense-stats.type';
 
 export class ExpenseStatsDto implements ExpenseCategoryStats {
     @ApiProperty({ example: 'Food', description: 'Category name' })

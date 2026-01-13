@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, FindOptionsWhere } from 'typeorm';
-import { Expense } from '../../domain/entity/expense.entity';
-import { IExpensesRepository } from '../../domain/interfaces/expenses-repository.interface';
-import { ExpenseFilters } from '../../domain/interfaces/expense-filters.interface';
-import { PaginatedResult } from '../../domain/interfaces/paginated-result.interface';
+import { Expense } from '../../domain/entities/expense.entity';
+import { ExpensesRepositoryPort } from '../../domain/ports/expenses.repository.port';
+import { ExpenseFilters } from '../../domain/types/expense-filters.type';
+import { PaginatedResult } from '../../domain/types/paginated-result.type';
 import { ExpenseEntity } from '../persistence/entities/expense.entity';
 import { ExpenseMapper } from '../persistence/mappers/expense.mapper';
-import { ExpenseCategoryStats } from '../../domain/interfaces/expense-stats.interface';
+import { ExpenseCategoryStats } from '../../domain/types/expense-stats.type';
 
 @Injectable()
-export class ExpensesRepository implements IExpensesRepository {
+export class ExpensesRepository implements ExpensesRepositoryPort {
   constructor(
     @InjectRepository(ExpenseEntity)
     private readonly typeOrmRepo: Repository<ExpenseEntity>,

@@ -1,4 +1,4 @@
-import { Expense } from '../../../domain/entity/expense.entity';
+import { Expense } from '../../../domain/entities/expense.entity';
 import { ExpenseEntity } from '../entities/expense.entity';
 
 export class ExpenseMapper {

@@ -1,18 +1,18 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import type { IExpensesRepository } from '../../domain/interfaces/expenses-repository.interface';
+import type { ExpensesRepositoryPort } from '../../domain/ports/expenses.repository.port';
 import { CreateExpenseDto } from '../dto/create-expense.dto';
 import { UpdateExpenseDto } from '../dto/update-expense.dto';
 import { FilterExpenseDto } from '../dto/filter-expense.dto';
 import { EXPENSES_REPOSITORY } from '../../tokens';
-import { Expense } from '../../domain/entity/expense.entity';
-import { PaginatedResult } from '../../domain/interfaces/paginated-result.interface';
+import { Expense } from '../../domain/entities/expense.entity';
+import { PaginatedResult } from '../../domain/types/paginated-result.type';
 //import { Like } from 'typeorm'; // Importamos Like para la búsqueda
 
 @Injectable()
 export class ExpensesService {
   constructor(
     @Inject(EXPENSES_REPOSITORY)
-    private readonly expensesRepository: IExpensesRepository,
+    private readonly expensesRepository: ExpensesRepositoryPort,
   ) { }
 
   async create(createExpenseDto: CreateExpenseDto) {
