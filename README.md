@@ -57,6 +57,67 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## 🐳 Docker Setup
+
+This project is containerized for easy development and deployment. Follow these steps to set up your environment.
+
+### 1. 📂 Volume Preparation (Windows)
+Before running the containers, you **MUST** create the following directories on your host machine to persist data.
+If you are on Windows, run these commands in PowerShell or CMD:
+
+```powershell
+mkdir C:\storage\postgres\data
+mkdir C:\storage\pgadmin
+```
+
+> **Note**: The `docker-compose.yml` maps `/c/storage/...` to these folders.
+
+### 2. 🐘 Database Stack (Postgres + PgAdmin)
+We use a separate compose file for the persistence layer.
+
+1.  Navigate to the postgres docker folder:
+    ```bash
+    cd docker/postgres
+    ```
+2.  Start the services:
+    ```bash
+    docker-compose up -d
+    ```
+3.  **Verify**:
+    -   **Postgres**: Port `5432`
+    -   **PgAdmin**: [http://localhost:5050](http://localhost:5050)
+        -   **User**: `admin@local.com`
+        -   **Password**: `admin123`
+
+### 3. 🚀 Backend Application
+Once the database is up, you can start the API.
+
+> [!WARNING]
+> **Security Note**: The passwords in `docker-compose.yml` are in plain text for **LOCAL DEVELOPMENT ONLY**.
+> For production environments, use **Docker Secrets** or environment variables injected by your CI/CD pipeline. Never commit real secrets to the repository.
+
+1.  **Configuration**: Ensure your `.env` file (or environment variables) points to the docker container name:
+    ```ini
+    DB_HOST=postgres17
+    ```
+    > **Why?** The database container is named `postgres17` in the compose file.
+
+2.  Navigate to the project root:
+    ```bash
+    cd ../..
+    # or cd c:/Projects/GitHub/backend-expenses
+    ```
+3.  Start the API:
+    ```bash
+    docker-compose up --build
+    ```
+3.  **Access**:
+    -   **API**: [http://localhost:3000](http://localhost:3000)
+    -   **Swagger Docs**: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+
+## 🌐 Network
+All services operate on a shared bridge network named `company_network` (or `shared_network` internally) to allow communication between the API and the Database.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
