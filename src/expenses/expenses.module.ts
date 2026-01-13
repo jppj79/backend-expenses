@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Expense } from './domain/entity/expense.entity';
+import { ExpenseEntity } from './infrastructure/persistence/entities/expense.entity';
 import { ExpensesController } from './presentation/controllers/expenses.controller';
 import { ExpensesService } from './application/use-cases/expenses.service';
 import { ExpensesRepository } from './infrastructure/repositories/expenses.repository';
 import { EXPENSES_REPOSITORY } from './tokens';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Expense])],
+  imports: [TypeOrmModule.forFeature([ExpenseEntity])],
   controllers: [ExpensesController], // Aún vacío, lo llenaremos en el paso 7
   providers: [
     ExpensesService,
@@ -18,4 +18,4 @@ import { EXPENSES_REPOSITORY } from './tokens';
   ],
   exports: [ExpensesService],
 })
-export class ExpensesModule {}
+export class ExpensesModule { }

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExpensesModule } from './expenses/expenses.module';
-import { Expense } from './expenses/domain/entity/expense.entity';
+import { ExpenseEntity } from './expenses/infrastructure/persistence/entities/expense.entity';
 
 @Module({
   imports: [
@@ -21,11 +21,11 @@ import { Expense } from './expenses/domain/entity/expense.entity';
         username: config.get<string>('DB_USER'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        entities: [Expense], // Registramos la entidad aquí
+        entities: [ExpenseEntity], // Registramos la entidad aquí
         synchronize: false, // SOLO para desarrollo (crea tablas auto)
       }),
     }),
     ExpensesModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }

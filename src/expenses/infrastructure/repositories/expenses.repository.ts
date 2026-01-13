@@ -5,71 +5,70 @@ import { Expense } from '../../domain/entity/expense.entity';
 import { IExpensesRepository } from '../../domain/interfaces/expenses-repository.interface';
 import { FilterExpenseDto } from '../../application/dto/filter-expense.dto';
 import { PaginatedResult } from '../../domain/interfaces/paginated-result.interface';
+import { ExpenseEntity } from '../persistence/entities/expense.entity';
+import { ExpenseMapper } from '../persistence/mappers/expense.mapper';
 
 @Injectable()
 export class ExpensesRepository implements IExpensesRepository {
   constructor(
-    @InjectRepository(Expense)
-    private readonly typeOrmRepo: Repository<Expense>,
-  ) {}
+    @InjectRepository(ExpenseEntity)
+    private readonly typeOrmRepo: Repository<ExpenseEntity>,
+  ) { }
 
   async create(expense: Expense): Promise<Expense> {
-    return this.typeOrmRepo.save(expense);
+    const expenseEntity = ExpenseMapper.toPersistence(expense);
+    const savedEntity = await this.typeOrmRepo.save(expenseEntity);
+    return ExpenseMapper.toDomain(savedEntity);
   }
 
   async findAll(filters: FilterExpenseDto): Promise<PaginatedResult<Expense>> {
-  const { page = 1, limit = 10, category, query } = filters;
-  const skip = (page - 1) * limit;
+    const { page = 1, limit = 10, category, query } = filters;
+    const skip = (page - 1) * limit;
 
-  // 1. Definimos el tipo de 'where' como un arreglo o un objeto único
-  let where: FindOptionsWhere<Expense> | FindOptionsWhere<Expense>[];
+    let where: FindOptionsWhere<ExpenseEntity> | FindOptionsWhere<ExpenseEntity>[];
 
-  if (query) {
-    // 2. Si hay query, buscamos en múltiples campos (OR)
-    // Cada objeto en este array es un "OR". La categoría se repite en ambos para mantener el "AND"
-    where = [
-      { description: ILike(`%${query}%`), ...(category && { category }) },
-      // Aquí puedes agregar más campos fácilmente en el futuro:
-      // { merchant: ILike(`%${query}%`), ...(category && { category }) },
-      // Equivale a;
-      // (description ILIKE %q% AND category = 'cat') OR (merchant ILIKE %q% AND category = 'cat')
-    ];
-  } else {
-    // 3. Si no hay query, solo filtramos por categoría si existe
-    where = category ? { category } : {};
+    if (query) {
+      where = [
+        { description: ILike(`%${query}%`), ...(category && { category }) },
+      ];
+    } else {
+      where = category ? { category } : {};
+    }
+
+    const [data, total] = await this.typeOrmRepo.findAndCount({
+      where,
+      skip,
+      take: limit,
+      order: { date: 'DESC' } as any,
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: data.map((item) => ExpenseMapper.toDomain(item)),
+      meta: {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages,
+      },
+    };
   }
 
-  const [data, total] = await this.typeOrmRepo.findAndCount({
-    where,
-    skip,
-    take: limit,
-    order: { date: 'DESC' } as any,
-  });
-
-  const totalPages = Math.ceil(total / limit);
-
-  return {
-    data,
-    meta: {
-      total,
-      page: Number(page),
-      limit: Number(limit),
-      totalPages,
-    },
-  };
-}
-
   async findById(id: number): Promise<Expense | null> {
-    return this.typeOrmRepo.findOne({ where: { id } });
+    const entity = await this.typeOrmRepo.findOne({ where: { id } });
+    if (!entity) return null;
+    return ExpenseMapper.toDomain(entity);
   }
 
   async update(id: number, expense: Partial<Expense>): Promise<void> {
+    // Note: This is partial, creating a more robust update might require fetching first
+    // but for now, we follow the pattern. 
+    // Ideally update should accept a full domain object or we partial update the persistence layer
     await this.typeOrmRepo.update(id, expense);
   }
 
   async delete(id: number): Promise<void> {
-    // El PDF menciona soft delete o hard delete[cite: 36].
-    // Usaremos delete simple (hard) por ahora.
     await this.typeOrmRepo.delete(id);
   }
 }
