@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, FindOptionsWhere } from 'typeorm';
 import { Expense } from '../../domain/entity/expense.entity';
 import { IExpensesRepository } from '../../domain/interfaces/expenses-repository.interface';
-import { FilterExpenseDto } from '../../application/dto/filter-expense.dto';
+import { ExpenseFilters } from '../../domain/interfaces/expense-filters.interface';
 import { PaginatedResult } from '../../domain/interfaces/paginated-result.interface';
 import { ExpenseEntity } from '../persistence/entities/expense.entity';
 import { ExpenseMapper } from '../persistence/mappers/expense.mapper';
@@ -22,7 +22,7 @@ export class ExpensesRepository implements IExpensesRepository {
     return ExpenseMapper.toDomain(savedEntity);
   }
 
-  async findAll(filters: FilterExpenseDto): Promise<PaginatedResult<Expense>> {
+  async findAll(filters: ExpenseFilters): Promise<PaginatedResult<Expense>> {
     const { page = 1, limit = 10, category, query } = filters;
     const skip = (page - 1) * limit;
 
