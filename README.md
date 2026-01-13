@@ -31,35 +31,9 @@
 $ npm install
 ```
 
-## Compile and run the project
+## 🐳 Environment Setup (Docker)
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## 🐳 Docker Setup
-
-This project is containerized for easy development and deployment. Follow these steps to set up your environment.
+To run this project, you first need to set up the infrastructure (Database) using Docker.
 
 ### 1. 📂 Volume Preparation (Windows)
 Before running the containers, you **MUST** create the following directories on your host machine to persist data.
@@ -89,28 +63,42 @@ We use a separate compose file for the persistence layer.
         -   **User**: `admin@local.com`
         -   **Password**: `admin123`
 
-### 3. 🚀 Backend Application
-Once the database is up, you can start the API.
+## Compile and run the project
+
+Once the database is up, you can run the backend either locally with npm or using Docker.
+
+### Option A: Local Development (NPM)
+
+> **Prerequisite**: Ensure `.env` is configured with `DB_HOST=localhost` if running outside Docker but connecting to Docker DB (requires port mapping), or `DB_HOST=postgres17` is ignored if you override connection settings. **However**, for hybrid dev (App local + DB docker), usually you connect to `localhost:5432`.
+> *Wait, the current setup uses a shared network. If running `npm run start` locally, it tries to connect to `DB_HOST`. If `DB_HOST` is `postgres17`, it won't resolve locally unless you edit hosts file. For simplicity, we assume `npm run start` is for local dev where you might need to adjust env or port mapping.*
+
+```bash
+# development
+$ npm run start
+
+# watch mode
+$ npm run start:dev
+
+# production mode
+$ npm run start:prod
+```
+
+### Option B: Docker (Full Stack)
 
 > [!WARNING]
 > **Security Note**: The passwords in `docker-compose.yml` are in plain text for **LOCAL DEVELOPMENT ONLY**.
-> For production environments, use **Docker Secrets** or environment variables injected by your CI/CD pipeline. Never commit real secrets to the repository.
+> For production environments, use **Docker Secrets** or environment variables injected by your CI/CD pipeline.
 
-1.  **Configuration**: Ensure your `.env` file (or environment variables) points to the docker container name:
+1.  **Configuration**: Ensure your `.env` points to the docker container name:
     ```ini
     DB_HOST=postgres17
     ```
-    > **Why?** The database container is named `postgres17` in the compose file.
 
-2.  Navigate to the project root:
-    ```bash
-    cd ../..
-    # or cd c:/Projects/GitHub/backend-expenses
-    ```
-3.  Start the API:
+2.  Start the API:
     ```bash
     docker-compose up --build
     ```
+
 3.  **Access**:
     -   **API**: [http://localhost:3000](http://localhost:3000)
     -   **Swagger Docs**: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
